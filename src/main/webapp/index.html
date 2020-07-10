@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<table width="100%">
+    <tr>
+        <td>numero</td>
+        <td>data emissao maior igual (dd/mm/yyyy)</td>
+        <td>data emissao menor igual (dd/mm/yyyy)</td>
+        <td>valor maior igual</td>
+        <td>valor menor igual</td>
+    </tr>
+    <tr>
+        <td><input id="numero" type="text"></td>
+        <td><input id="dataEmissaoMaiorIgual" type="text"></td>
+        <td><input id="dataEmissaoMenorIgual" type="text"></td>
+        <td><input id="valorMaiorIgual" type="number"></td>
+        <td><input id="valorMenorIgual" type="number"></td>
+    </tr>
+</table>
+<table width="100%">
+    <tr>
+        <td>Nome Cliente Contains</td>
+        <td>Cidade Cliente Contains</td>
+        <td>Estado Cliente Contains</td>
+    </tr>
+    <tr>
+        <td><input id="nomeCliente" type="text"></td>
+        <td><input id="cidadeCliente" type="text"></td>
+        <td><input id="estadoCliente" type="text"></td>
+    </tr>
+</table>
+<table width="100%">
+    <tr>
+        <td>Nome Empresa Contains</td>
+        <td>Cidade Empresa Contains</td>
+        <td>Estado Empresa Contains</td>
+    </tr>
+    <tr>
+        <td><input id="nomeEmpresa" type="text"></td>
+        <td><input id="cidadeEmpresa" type="text"></td>
+        <td><input id="estadoEmpresa" type="text"></td>
+    </tr>
+</table>
+
+<h2>Exemplo Consulta Parametrizada</h2>
+
+Tipo Consulta
+<select id="tipoConsulta" >
+    <option value="SQL">SQL</option>
+    <option value="HQL">HQL</option>
+    <option value="CRITERIA">CRITERIA</option>
+    <option value="SPECIFICATION">SPECIFICATION</option>
+    <option value="QUERYDSL">QUERYDSL</option>
+</select>
+<button onclick="pesquisar()" type="button">Pesquisar</button>
+
+<p id="demo"></p>
+
+<script>
+    function pesquisar() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            table = "<table width='100%' border='1px solid'><tr><td rowspan=\"2\">Numero</td><td rowspan=\"2\">Data Emissao</td><td rowspan=\"2\">Valor</td><td colspan=\"3\">Cliente</td><td colspan=\"3\">Empresa</td></tr><tr><td>Nome</td><td>Cidade</td><td>Estado</td><td>Nome</td><td>Cidade</td><td>Estado</td></tr>"
+            if (this.readyState == 4 && this.status == 200) {
+                let nfs = JSON.parse(this.responseText);
+                if (nfs.length > 0) {
+                    for (var i = 0; i < nfs.length; i++) {
+                        table = table + "<tr>";
+                        table = table + "<td>" + nfs[i].numero + "</td>";
+                        table = table + "<td>" + nfs[i].dataEmissao + "</td>";
+                        table = table + "<td>" + nfs[i].valor + "</td>";
+                        table = table + "<td>" + nfs[i].cliente.nome + "</td>";
+                        table = table + "<td>" + nfs[i].cliente.cidade.nome + "</td>";
+                        table = table + "<td>" + nfs[i].cliente.cidade.estado.nome + "</td>";
+                        table = table + "<td>" + nfs[i].empresa.nome + "</td>";
+                        table = table + "<td>" + nfs[i].empresa.cidade.nome + "</td>";
+                        table = table + "<td>" + nfs[i].empresa.cidade.estado.nome + "</td>";
+                        table = table + "</tr>"
+                    }
+                }
+            }
+            table = table + "</table>"
+            document.getElementById("demo").innerHTML = table;
+        };
+        queryString = "?tipoConsulta=" + document.getElementById("tipoConsulta").value;
+        queryString = queryString + "&numero=" + document.getElementById("numero").value;
+        queryString = queryString + "&dataEmissaoMaiorIgual=" + document.getElementById("dataEmissaoMaiorIgual").value;
+        queryString = queryString + "&dataEmissaoMenorIgual=" + document.getElementById("dataEmissaoMenorIgual").value;
+        queryString = queryString + "&valorMaiorIgual=" + document.getElementById("valorMaiorIgual").value;
+        queryString = queryString + "&valorMenorIgual=" + document.getElementById("valorMenorIgual").value;
+        queryString = queryString + "&nomeCliente=" + document.getElementById("nomeCliente").value;
+        queryString = queryString + "&cidadeCliente=" + document.getElementById("cidadeCliente").value;
+        queryString = queryString + "&estadoCliente=" + document.getElementById("estadoCliente").value;
+        queryString = queryString + "&nomeEmpresa=" + document.getElementById("nomeEmpresa").value;
+        queryString = queryString + "&cidadeEmpresa=" + document.getElementById("cidadeEmpresa").value;
+        queryString = queryString + "&estadoEmpresa=" + document.getElementById("estadoEmpresa").value;
+        xhttp.open("GET", "http://localhost:8080/consultaNotaFiscal"+queryString, true);
+        xhttp.send();
+    }
+</script>
+
+</body>
+</html>
